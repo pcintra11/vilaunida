@@ -1,22 +1,23 @@
-import styles from "./page.module.css";
+//import styles from "./page.module.css";
 
-export default function Home() {
+export default function Page() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <div>
-          <div>links</div>
-          <a href="https://test.vizinet.com.br">
-            página test.vizinet.com.br
-          </a>
-          <a href="https://test.vizinet.com.br/vzn/presentation">
-            página test.vizinet.com.br/vzn/presentation
-          </a>
-          <a href="https://test.vizinet.com.br" rel="noopener noreferrer">
-            página test.vizinet.com.br noopener noreferrer
-          </a>
-        </div>
+    <div>
+      <div>
+        <a href='https://vizinet.com.br'>
+          página vizinet.com.br
+        </a>
       </div>
-    </main>
+      <div>
+        <a href='https://vizinet.com.br/manicure_marianne_2024'>
+          página vizinet.com.br/manicure_marianne_2024
+        </a>
+      </div>
+      <div>
+        <a href='https://vizinet.com.br' rel='noopener noreferrer'>
+          página vizinet.com.br noopener noreferrer
+        </a>
+      </div>
+    </div>
   );
 }
