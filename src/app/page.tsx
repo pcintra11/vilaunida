@@ -4,6 +4,11 @@ export default function Page() {
   return (
     <div>
       <div>
+        <a href='https://test.vizinet.com.br'>
+          página test.vizinet.com.br
+        </a>
+      </div>
+      <div>
         <a href='https://vizinet.com.br'>
           página vizinet.com.br
         </a>
