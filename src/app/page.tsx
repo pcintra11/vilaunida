@@ -1,5 +1,7 @@
 //import styles from "./page.module.css";
 
+import { InstallPrompt, PushNotificationManager } from "./pwa";
+
 export default function Page() {
   return (
     <div>
@@ -23,6 +25,9 @@ export default function Page() {
           página vizinet.com.br noopener noreferrer
         </a>
       </div>
+
+      <PushNotificationManager />
+      <InstallPrompt />
     </div>
   );
 }
