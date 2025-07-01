@@ -1,6 +1,6 @@
 //import styles from "./page.module.css";
 
-import { InstallPrompt, PushNotificationManager } from "./pwa";
+import { PWAInstallPrompt, PWAPushNotificationManager } from "./pwa_components";
 
 export default function Page() {
   return (
@@ -26,8 +26,8 @@ export default function Page() {
         </a>
       </div>
 
-      <PushNotificationManager />
-      <InstallPrompt />
+      <PWAPushNotificationManager />
+      <PWAInstallPrompt />
     </div>
   );
 }

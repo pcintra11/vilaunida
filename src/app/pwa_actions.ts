@@ -1,51 +1,51 @@
 'use server'
  
-import { log } from 'console';
 import webpush from 'web-push';
  
 webpush.setVapidDetails(
-  'mailto:pcintra1@gmail.com',
+  'mailto:XXXXpcintra1@gmail.com', //@!!!!!!!!!!!!19 ??
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
-)
+);
  
-let subscription: PushSubscription | null = null
+let subscription: PushSubscription | null = null;
  
 export async function subscribeUser(sub: PushSubscription) {
-  log('subscribeUser', sub);
-  subscription = sub
+  console.log('subscribeUser - subscription', sub);
+  subscription = sub;
   // In a production environment, you would want to store the subscription in a database
   // For example: await db.subscriptions.create({ data: sub })
-  return { success: true }
+  return { success: true };
 }
  
 export async function unsubscribeUser() {
-  log('unsubscribeUser', subscription);
-  subscription = null
+  console.log('unsubscribeUser - subscription', subscription);
+  subscription = null;
   // In a production environment, you would want to remove the subscription from the database
   // For example: await db.subscriptions.delete({ where: { ... } })
-  return { success: true }
+  return { success: true };
 }
  
 export async function sendNotification(message: string) {
+  console.log('sendNotification - subscription', subscription);
   if (!subscription)
-    throw new Error('No subscription available')
+    throw new Error('No subscription available');
 
-  log('sendNotification', subscription);
-  const xx = JSON.stringify(subscription);
+  console.log('sendNotification');
+  const subscriptionJSON = JSON.stringify(subscription);
  
   try {
     await webpush.sendNotification(
-      JSON.parse(xx),
+      JSON.parse(subscriptionJSON),
       JSON.stringify({
         title: 'Test Notification',
         body: message,
-        icon: '/icon.png',
+        icon: '/icon-96x96.png', //@!!!!!!!19
       })
-    )
-    return { success: true }
+    );
+    return { success: true };
   } catch (error) {
-    console.error('Error sending push notification:', error)
-    return { success: false, error: 'Failed to send notification' }
+    console.error('Error sending push notification:', error);
+    return { success: false, error: 'Failed to send notification' };
   }
 }
