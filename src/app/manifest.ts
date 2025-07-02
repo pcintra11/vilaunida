@@ -5,7 +5,7 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Vila Unida',
-    short_name: 'VUnida',
+    short_name: 'VUnida2',
     description: 'Todas as dicas sobre viver em condomínio',
     start_url: '/', //@!!!!!!!!!19
     display: 'standalone',

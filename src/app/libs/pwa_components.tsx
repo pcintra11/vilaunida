@@ -73,7 +73,7 @@ export function PWAInstallPrompt() {
               e selecione &quot;Adicionar à Tela de Início&quot;
               {/* <span role="img" aria-label="plus icon">
                 <IosShareIcon />
-              </span> */}         
+              </span> */}
             </p>
           )}
         </>
@@ -168,8 +168,14 @@ export function PWAPushNotificationManager() {
     console.log('sendTestNotification - subscription', subscription);
     console.log('sendTestNotification - message', message);
     if (subscription != null) {
-      await sendNotification(message);
-      setMessage('');
+      try {
+        await sendNotification(message);
+        console.log('sendTestNotification - ok');
+        setMessage('');
+      }
+      catch (error: any) {
+        console.log('sendTestNotification - error', error);
+      }
     }
   }
 
