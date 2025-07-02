@@ -7,7 +7,7 @@ import { isIOS, isMobile } from 'react-device-detect';
 
 import { subscribeUser, unsubscribeUser, sendNotification } from './pwa_actions';
 
-import { CookieCli } from './libs/cookiesCli';
+import { CookieCli } from './cookiesCli';
 
 let deferredPrompt: any = null;
 
@@ -26,17 +26,16 @@ export function PWAInstallPrompt() {
     setAppInstalled(isAppInstalled);
 
     const handler = (e: any) => {
-      console.log('bbb');  // esse evento não existe para o computador? !!!!!!!!!19
       e.preventDefault(); // para mostrar uma mensagem mais explicativa sobre a importância da instalação
       deferredPrompt = e;
       const cookieInstall = CookieCli.get('installPrompt');
       console.log('cookieInstall', cookieInstall);
-      if (cookieInstall !== 'exibido')
+      if (cookieInstall !== 'exibido') {
         setShowInstallInstruction(true);
-      else
         CookieCli.set('installPrompt', 'exibido', { maxAgeSeconds: 60 }); //@!!!!!!!!!!!19
+      }
     }
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('beforeinstallprompt', handler); // esse evento só existe para mobile!
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
@@ -98,6 +97,7 @@ export function PWAPushNotificationManager() {
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
   const [showSubscriptionCtrl, setShowSubscriptionCtrl] = useState<boolean>(false);
   const [message, setMessage] = useState('');
+  const [appInstalled, setAppInstalled] = useState(false);
 
   async function checkIsUserSubscribed() {
     console.log('isUserSubscribed');
@@ -110,6 +110,12 @@ export function PWAPushNotificationManager() {
   }
 
   useEffect(() => {
+    const isAppInstalled =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true; // necessário para Safari no iOS //@!!!!!!!!!19 testar
+    console.log('isAppInstalled', isAppInstalled);
+    setAppInstalled(isAppInstalled);
+
     console.log('serviceWorker', 'serviceWorker' in navigator);
     console.log('PushManager', 'PushManager' in window);
     if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -161,7 +167,7 @@ export function PWAPushNotificationManager() {
   async function sendTestNotification() {
     console.log('sendTestNotification - subscription', subscription);
     console.log('sendTestNotification - message', message);
-    if (subscription) {
+    if (subscription != null) {
       await sendNotification(message);
       setMessage('');
     }
@@ -173,7 +179,7 @@ export function PWAPushNotificationManager() {
   return (
     <div>
       <h3>Push Notifications</h3>
-      {showSubscriptionCtrl &&
+      {(appInstalled && showSubscriptionCtrl) &&
         <>
           {subscription ? (
             <>
