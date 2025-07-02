@@ -6,7 +6,7 @@ self.addEventListener('push', function (event) {
     const options = {
       body: data.body,
       icon: '/icon-500x500.png', // data.icon || 
-      badge: '/icon-96x96.png', // '/badge.webp', //@!!!!!!!!!!!!19
+      //badge: '/icon-96x96.png', // '/badge.webp', //@!!!!!!!!!!!!19
       //vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),

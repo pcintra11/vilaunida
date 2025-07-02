@@ -16,7 +16,7 @@ export function PWAInstallPrompt() {
   const [showInstallInstruction, setShowInstallInstruction] = useState(false);
 
   useEffect(() => {
-    // setIsIOS( //@!!!!!!!!!!!!!!!19
+    // setIsIOS(
     //   /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
     // );
     const isAppInstalled =
@@ -112,7 +112,7 @@ export function PWAPushNotificationManager() {
   useEffect(() => {
     const isAppInstalled =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true; // necessário para Safari no iOS //@!!!!!!!!!19 testar
+      (window.navigator as any).standalone === true; // necessário para Safari no iOS
     console.log('isAppInstalled', isAppInstalled);
     setAppInstalled(isAppInstalled);
 
@@ -121,7 +121,7 @@ export function PWAPushNotificationManager() {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       setIsSupported(true);
       registerServiceWorker();
-      //subscribeToPush(); // @!!!!!!!!!!!19 sempre??
+      //subscribeToPush();
       checkIsUserSubscribed();
     }
   }, []);
@@ -169,12 +169,12 @@ export function PWAPushNotificationManager() {
     console.log('sendTestNotification - message', message);
     if (subscription != null) {
       try {
-        await sendNotification(message);
-        console.log('sendTestNotification - ok');
+        const result = await sendNotification(message);
+        console.log('sendTestNotification - ok', result);
         setMessage('');
       }
       catch (error: any) {
-        console.log('sendTestNotification - error', error);
+        console.log('sendTestNotification - error', error); //@!!!!!!!!!!19
       }
     }
   }

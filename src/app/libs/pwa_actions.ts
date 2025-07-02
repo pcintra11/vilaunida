@@ -3,7 +3,7 @@
 import webpush from 'web-push';
  
 webpush.setVapidDetails(
-  'mailto:XXXXpcintra1@gmail.com', //@!!!!!!!!!!!!19 ??
+  'mailto:pcintra1@gmail.com', //@!!!!!!!!!!!!19 ??
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
 );
@@ -31,11 +31,11 @@ export async function sendNotification(message: string) {
   if (!subscription)
     throw new Error('No subscription available');
 
-  console.log('sendNotification');
   const subscriptionJSON = JSON.stringify(subscription);
  
   try {
-    await webpush.sendNotification(
+    console.log('sendNotification - sending');
+    const result = await webpush.sendNotification(
       JSON.parse(subscriptionJSON),
       JSON.stringify({
         title: 'Test Notification',
@@ -43,9 +43,10 @@ export async function sendNotification(message: string) {
         icon: '/icon-96x96.png', // é o ícone que aparece na barra de status do celular, lá no topo E ao lado direito da notificação no computador
       })
     );
+    console.log('sendNotification - result', result);
     return { success: true };
   } catch (error) {
-    console.error('Error sending push notification:', error);
+    console.error('sendNotification - error', error);
     return { success: false, error: 'Failed to send notification' };
   }
 }
