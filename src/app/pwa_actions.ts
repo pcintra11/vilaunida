@@ -40,7 +40,7 @@ export async function sendNotification(message: string) {
       JSON.stringify({
         title: 'Test Notification',
         body: message,
-        icon: '/icon-96x96.png', //@!!!!!!!19
+        icon: '/icon-96x96.png', // é o ícone que aparece na barra de status do celular, lá no topo E ao lado direito da notificação no computador
       })
     );
     return { success: true };
