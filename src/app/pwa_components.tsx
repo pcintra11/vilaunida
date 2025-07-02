@@ -2,32 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import { isIOS, isMobile } from 'react-device-detect';
+// import IosShareIcon from '@mui/icons-material/IosShare';
+// import IosAdd from '@mui/icons-material/AddBox';
+
 import { subscribeUser, unsubscribeUser, sendNotification } from './pwa_actions';
 
 import { CookieCli } from './libs/cookiesCli';
 
-function isAppInstalled() {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as any).standalone === true // necessário para Safari no iOS //@!!!!!!!!!19 testar
-  )
-}
-
 let deferredPrompt: any = null;
 
 export function PWAInstallPrompt() {
-  //const [appInstalled, setAppInstalled] = useState(isAppInstalled());
+  const [appInstalled, setAppInstalled] = useState(false);
   const [showInstallInstruction, setShowInstallInstruction] = useState(false);
 
   useEffect(() => {
     // setIsIOS( //@!!!!!!!!!!!!!!!19
     //   /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
     // );
-    //setAppInstalled(isAppInstalled());
+    const isAppInstalled =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true; // necessário para Safari no iOS //@!!!!!!!!!19 testar
+    console.log('isAppInstalled', isAppInstalled);
+    setAppInstalled(isAppInstalled);
+
     const handler = (e: any) => {
+      console.log('bbb');  // esse evento não existe para o computador? !!!!!!!!!19
       e.preventDefault(); // para mostrar uma mensagem mais explicativa sobre a importância da instalação
       deferredPrompt = e;
       const cookieInstall = CookieCli.get('installPrompt');
+      console.log('cookieInstall', cookieInstall);
       if (cookieInstall !== 'exibido')
         setShowInstallInstruction(true);
       else
@@ -41,7 +44,7 @@ export function PWAInstallPrompt() {
     console.log('PWAInstallPrompt - não é mobile');
     return null;
   }
-  if (isAppInstalled()) {
+  if (appInstalled) {
     console.log('PWAInstallPrompt - já instalado'); // testar desinstalar !!!!!!!!19
     return null;
   }
@@ -64,18 +67,14 @@ export function PWAInstallPrompt() {
       {showInstallInstruction &&
         <>
           <button onClick={handleInstall}>Adicione a Vizinet na tela principal do celular</button>
-          {!isIOS && (
+          {isIOS && (
             <p>
-              Obs: Para Apple, se o botão acima não funcionar, acione compartilhar
-              <span role="img" aria-label="share icon">
-                {' '}
-                ⎋{' '}
-              </span>
-              e depois &quot;Adicionar à Tela de Início&quot;
-              <span role="img" aria-label="plus icon">
-                {' '}
-                ➕{' '}
-              </span>.
+              Em dispositivos Apple, caso o botão acima não funcione, toque em &quot;Compartilhar&quot;
+              {' '}
+              e selecione &quot;Adicionar à Tela de Início&quot;
+              {/* <span role="img" aria-label="plus icon">
+                <IosShareIcon />
+              </span> */}         
             </p>
           )}
         </>
@@ -97,7 +96,18 @@ function urlBase64ToUint8Array(base64String: string) {
 export function PWAPushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
+  const [showSubscriptionCtrl, setShowSubscriptionCtrl] = useState<boolean>(false);
   const [message, setMessage] = useState('');
+
+  async function checkIsUserSubscribed() {
+    console.log('isUserSubscribed');
+    if (!('serviceWorker' in navigator)) return false;
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    setSubscription(subscription);
+    console.log('isUserSubscribed - result', subscription != null);
+    setShowSubscriptionCtrl(true);
+  }
 
   useEffect(() => {
     console.log('serviceWorker', 'serviceWorker' in navigator);
@@ -106,6 +116,7 @@ export function PWAPushNotificationManager() {
       setIsSupported(true);
       registerServiceWorker();
       //subscribeToPush(); // @!!!!!!!!!!!19 sempre??
+      checkIsUserSubscribed();
     }
   }, []);
 
@@ -148,6 +159,8 @@ export function PWAPushNotificationManager() {
   }
 
   async function sendTestNotification() {
+    console.log('sendTestNotification - subscription', subscription);
+    console.log('sendTestNotification - message', message);
     if (subscription) {
       await sendNotification(message);
       setMessage('');
@@ -160,24 +173,34 @@ export function PWAPushNotificationManager() {
   return (
     <div>
       <h3>Push Notifications</h3>
-      {subscription ? (
+      {showSubscriptionCtrl &&
         <>
-          <p>You are subscribed to push notifications.</p>
-          <button onClick={unsubscribeFromPush}>Unsubscribe</button>
-          <input
-            type="text"
-            placeholder="Enter notification message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <button onClick={sendTestNotification}>Send Test</button>
+          {subscription ? (
+            <>
+              <div>
+                <p>You are subscribed to push notifications.</p>
+                &nbsp;
+                <button onClick={unsubscribeFromPush}>Unsubscribe</button>
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Enter notification message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+                &nbsp;
+                <button onClick={sendTestNotification}>Send Test</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>Algumas mensagens da Vizinet merecem sua atenção e vamos notificá-lo por aqui, mas para isso você precisa autorizar.</p>
+              <button onClick={subscribeToPush}>Clique aqui para permitir as notificações e confirme no diálogo seguinte.</button>
+            </>
+          )}
         </>
-      ) : (
-        <>
-          <p>Algumas mensagens da Vizinet merecem sua atenção e vamos notificá-lo por aqui, mas para isso você precisa autorizar.</p>
-          <button onClick={subscribeToPush}>Clique aqui para permitir as notificações e confirme no diálogo seguinte.</button>
-        </>
-      )}
+      }
     </div>
   );
 }
